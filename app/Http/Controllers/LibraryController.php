@@ -77,29 +77,5 @@ class libraryController extends Controller
     // Jika pencarian gagal, lempar notifikasi eror agar kita tahu masalahnya
     return redirect('/dashboard')->with('error', 'Aduh! Gagal mengubah status buku "' . $judulBuku . '" di database.');
 }
-public function uploadFoto(Request $request)
-{
-    $request->validate([
-        'foto_galeri' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
 
-    if ($request->hasFile('foto_galeri')) {
-        $user = \App\Models\User::find(auth()->user()->id);
-
-        if ($user->foto && \Storage::disk('public')->exists('foto_profil/' . $user->foto)) {
-            \Storage::disk('public')->delete('foto_profil/' . $user->foto);
-        }
-
-        $file = $request->file('foto_galeri');
-        $namaFile = 'foto_user' . $user->id . '_' . time() . '_' . $file->getClientOriginalExtension();
-
-        $file->storeAs('foto_profil', $namaFile, 'public');
-
-        $user->update(['foto' => $namaFile]);
-
-        return redirect('/dashboard')->with('sukses', 'Foto Profil berhasil diperbarui!');
-    }
-
-    return derirect('/dashboard')->with('error', 'Gagal mengunggah foto profil.');
-}
 }
