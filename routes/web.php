@@ -4,23 +4,33 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\libraryController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('auth.login');
+// 1. Rute Halaman Login
+Route::get('/', function () { 
+    return view('auth.login'); 
 });
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
-
-Route::get('/dashboard', [libraryController::class, 'arahkanHalaman'])
+// 2. Rute Dashboard (Menggunakan fungsi 'index' di libraryController)
+Route::get('/dashboard', [libraryController::class, 'index'])
      ->middleware(['auth', 'verified'])
      ->name('dashboard');
 
-Route::post('/pinjam-buku/{judul?}', [libraryController::class, 'prosesPinjam'])
-    ->middleware('auth');
-
-Route::post('/kembalikan-buku', [LibraryController::class, 'prosesKembali'])
-    ->middleware('auth');
-
+// 3. Rute yang memerlukan Autentikasi (Wajib Login)
+Route::middleware('auth')->group(function () {
     
+    // Manajemen Profil
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Manajemen Buku (Tambah, Update Sampul)
+    Route::post('/profile/avatar', [libraryController::class, 'updateAvatar'])->name('profile.avatar.update');
+    Route::post('/buku', [libraryController::class, 'storeBook'])->name('books.store');
+    Route::put('/buku/{id}', [libraryController::class, 'updateBook'])->name('books.update');
+
+    // FITUR UTAMA: Pinjam & Kembalikan
+    // Perhatikan: Menggunakan Route::post karena form menggunakan method POST
+    Route::post('/pinjam-buku', [libraryController::class, 'prosesPinjam'])->name('books.pinjam');
+    Route::post('/kembalikan-buku', [libraryController::class, 'prosesKembali'])->name('books.kembalikan');
+});
+
 require __DIR__.'/auth.php';
