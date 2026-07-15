@@ -80,6 +80,17 @@
                 @if(isset($semuaBuku) && $semuaBuku->count() > 0)
                     
                     {{-- TAMBAH BUKU (KHUSUS PENJAGA) --}}
+
+                    {{-- LINK AKSES DAFTAR PINJAMAN (Diletakkan sebelum form tambah buku) --}}
+                        @if(Auth::check() && Auth::user()->role == 'penjaga')
+                            <div class="max-w-2xl mx-auto mb-6 flex justify-end">
+                                <a href="{{ route('peminjaman.index') }}" 
+                                class="bg-pink-600 hover:bg-pink-700 text-gray font-bold py-2 px-6 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest">
+                                📋 Lihat Daftar Peminjaman Buku
+                                </a>
+                            </div>
+                        @endif
+
                     @if(Auth::check() && Auth::user()->role == 'penjaga')
                         <div class="bg-white/80 backdrop-blur-md p-8 rounded-[32px] border border-rose-100/60 shadow-sm max-w-2xl mx-auto mb-10 col-span-full w-full">
                             <h3 class="font-black text-slate-800 text-lg uppercase tracking-wider mb-6">📚 Tambah Buku Baru</h3>
@@ -125,6 +136,22 @@
                                     @else
                                         <span class="text-4xl">📖</span>
                                     @endif
+                                    {{-- BAGIAN GANTI SAMPUL (HANYA PENJAGA) --}}
+                                        @if(Auth::check() && Auth::user()->role == 'penjaga')
+                                            <form action="{{ route('books.update', $item->id) }}" method="POST" enctype="multipart/form-data" class="mt-4">
+                                                @csrf @method('PUT')
+                                                
+                                                <label class="block w-full cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] text-center py-2 rounded-lg font-bold transition">
+                                                    <span id="label-file-{{$item->id}}">PILIH FOTO SAMPUL</span>
+                                                    <input type="file" name="cover" required class="hidden" 
+                                                        onchange="document.getElementById('label-file-{{$item->id}}').innerText = this.files[0].name">
+                                                </label>
+                                                
+                                                <button type="submit" class="w-full mt-2 bg-pink-600 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-pink-700 transition">
+                                                    💾 SIMPAN PERUBAHAN
+                                                </button>
+                                            </form>
+                                        @endif
                                 </div>
 
                                 <h3 class="font-black text-slate-800 text-xl mb-1">{{ $item->judul }}</h3>
@@ -145,23 +172,24 @@
                                     Status DB: [{{ $item->status }}]
                                 </div>
 
-                                @if(trim($item->status) == 'Tersedia')
-                                    <form method="POST" action="{{ route('books.pinjam') }}" class="block w-full">
-                                        @csrf
-                                        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
-                                        <button type="submit" style="background-color: #e11d48 !important;" class="w-full text-white py-4 rounded-2xl font-black shadow-xl hover:bg-pink-700 transition-all duration-300 border-none cursor-pointer">
-                                            💖 PINJAM BUKU
-                                        </button>
-                                    </form>
-                                @else
-                                    <form method="POST" action="{{ route('books.kembalikan') }}" class="block w-full">
-                                        @csrf
-                                        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
-                                        <button type="submit" style="background-color: #1e293b !important;" class="w-full text-white py-4 rounded-2xl font-black shadow-xl hover:bg-black transition-all duration-300 border-none cursor-pointer">
-                                            ↩️ KEMBALIKAN
-                                        </button>
-                                    </form>
-                                @endif
+                                {{-- Gunakan cara ini untuk memastikan perbandingannya bersih --}}
+@if($item->status == 'Tersedia')
+    <form method="POST" action="{{ route('books.pinjam') }}">
+        @csrf
+        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
+        <button type="submit" class="bg-pink-600 text-black ...">
+             PINJAM BUKU 💖
+        </button>
+    </form>
+@else
+    <form method="POST" action="{{ route('books.kembalikan') }}">
+        @csrf
+        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
+        <button type="submit" class="bg-pink-600 text-white font-bold py-2 px-4 rounded">
+            ↩️ KEMBALIKAN
+        </button>
+    </form>
+@endif
                             </div>
                         </div>
                     @endforeach

@@ -20,27 +20,36 @@ class libraryController extends Controller
         $semuaBuku = $query->get();
         $bukuTerlambat = Borrowing::where('tanggal_kembali', '<', Carbon::now())->get();
 
+        
         return view('dashboard', compact('semuaBuku', 'bukuTerlambat'));
     }
 
     // Fungsi Pinjam
+  
     public function prosesPinjam(Request $request)
-    {
-        $request->validate(['judul_buku' => 'required']);
-        $buku = Book::where('judul', trim($request->judul_buku))->first();
+{
+    $request->validate(['judul_buku' => 'required']);
+    // dd(trim($request->judul_buku));
+    // Ambil buku
+    $buku = Book::where('judul', trim($request->judul_buku))->first();
 
-        if ($buku && $buku->status === 'Tersedia') {
-            $buku->update(['status' => 'Dipinjam']);
-            Borrowing::create([
-                'nama_peminjam' => Auth::user()->name,
-                'judul_buku'    => $buku->judul,
-                'tanggal_kembali' => Carbon::now()->addDays(7)
-            ]);
-            return redirect()->back()->with('sukses', 'Berhasil meminjam: ' . $buku->judul);
-        }
-        return redirect()->back()->with('error', 'Buku tidak tersedia!');
+    // Gunakan strtolower untuk perbandingan yang pasti cocok
+    if ($buku && trim($buku->status) === 'Tersedia') {
+        
+        $buku->update(['status' => 'Dipinjam']);
+
+        \App\Models\Borrowing::create([
+            'nama_peminjam'   => Auth::user()->name,
+            'judul_buku'      => $buku->judul,
+            'tanggal_kembali' => \Carbon\Carbon::now()->addDays(7)
+        ]);
+
+        return redirect()->back()->with('sukses', 'Berhasil meminjam: ' . $buku->judul);
     }
 
+    return redirect()->back()->with('error', 'Maaf, buku tidak tersedia!');
+}
+       
     // Fungsi Kembali
     public function prosesKembali(Request $request)
     {
@@ -50,8 +59,35 @@ class libraryController extends Controller
         if ($buku) {
             $buku->update(['status' => 'Tersedia']);
             Borrowing::where('judul_buku', $buku->judul)->delete();
-            return redirect()->back()->with('sukses', 'Buku ' . $buku->judul . ' dikembalikan.');
+            
+            return redirect()->back()->with('sukses', 'Buku ' . $buku->judul . ' berhasil dikembalikan.');
         }
+        
         return redirect()->back()->with('error', 'Gagal memproses pengembalian.');
+    }
+
+    public function daftarPeminjaman()
+{
+    // Mengambil semua data peminjaman beserta informasi peminjam
+    $peminjaman = \App\Models\Borrowing::all();
+    
+    return view('peminjaman.index', compact('peminjaman'));
+}
+    
+    public function update(Request $request, $id)
+    {
+        // 1. Validasi file
+        $request->validate(['cover' => 'required|image|mimes:jpeg,png,jpg|max:2028']);
+
+        // 2. cari buku
+        $buku = \App\Models\Book::findOrFail($id);
+        
+        // 3. Proses upload
+        if ($request->hasFile('cover')) {
+            $path = $request->file('cover')->store('covers', 'public');
+            $buku->cover = $path;
+            $buku->save();
+        }
+        return redirect()->back()->with('sukses', 'Sampul berhasil diperbarui!');
     }
 }

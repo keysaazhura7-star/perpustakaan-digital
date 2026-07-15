@@ -16,6 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->string('judul');
             $table->string('penulis');
+            $table->string('status')->default('tersedia');
+            $table->timestamps();
         });
     }
 
