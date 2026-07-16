@@ -1,15 +1,19 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-black text-2xl bg-gradient-to-r from-rose-700 via-pink-600 to-rose-600 bg-clip-text text-transparent leading-tight flex items-center gap-2">
-                <span>🌸</span> {{ __('Perpustakaan Ceria') }}
-            </h2>
-            <span class="text-xs font-bold px-3 py-1 bg-rose-100 text-rose-700 rounded-full tracking-wider uppercase shadow-sm">
-                Premium Theme
+    <header class="bg-white border-b border-slate-100 py-6 mb-8">
+    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 tracking-tighter uppercase">
+                Perpustakaan <span class="text-pink-600">Digital</span>
+            </h1>
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Sistem Kelola Buku & Peminjaman</p>
+        </div>
+        <div class="text-right">
+            <span class="text-[10px] bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-bold uppercase">
+                {{ now()->format('d M Y') }}
             </span>
         </div>
-    </x-slot>
-
+    </div>
+</header>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         @if(session('sukses'))
             <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-6 py-4 rounded-3xl text-xs font-bold shadow-sm mb-6">
@@ -46,14 +50,25 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-rose-100/30">
-                                        @foreach($bukuTerlambat as $pinjam)
-                                            <tr class="hover:bg-rose-100/20 transition-colors">
-                                                <td class="py-3 font-semibold">{{ $pinjam->nama_peminjam }}</td>
-                                                <td class="py-3 italic text-rose-800/90">"{{ $pinjam->judul_buku }}"</td>
-                                                <td class="py-3 text-right font-bold text-pink-600 animate-pulse">Terlambat</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
+    @foreach($bukuTerlambat as $pinjam)
+        <tr class="hover:bg-rose-100/20 transition-colors">
+            <td class="py-3 font-semibold">{{ $pinjam->nama_peminjam }}</td>
+            <td class="py-3 italic text-rose-800/90">"{{ $pinjam->judul_buku }}"</td>
+            <td class="py-3 text-right">
+                @if($pinjam->denda > 0)
+                    <div class="flex flex-col items-end">
+                        <span class="font-bold text-pink-600 animate-pulse uppercase text-[10px]">TERLAMBAT</span>
+                        <span class="text-red-700 font-bold text-xs">
+                            Rp {{ number_format($pinjam->denda, 0, ',', '.') }}
+                        </span>
+                    </div>
+                @else
+                    <span class="text-green-600 font-bold text-xs uppercase">Aman</span>
+                @endif
+            </td>
+        </tr>
+    @endforeach
+</tbody>
                                 </table>
                             </div>
                         </div>
@@ -164,8 +179,8 @@
                                         <button type="submit" class="bg-pink-600 text-white text-[10px] px-3 py-1 rounded-lg">Ganti Sampul</button>
                                     </form>
                                 @endif
-                            </div>
-
+                            </div>  
+ 
                             {{-- TOMBOL AKSI DENGAN DEBUG --}}
                             <div class="p-6 bg-slate-50/50 border-t border-slate-100/80">
                                 <div class="mb-4 text-[9px] font-mono text-rose-500 bg-rose-100 p-2 rounded italic text-center border border-rose-200">
@@ -177,15 +192,16 @@
     <form method="POST" action="{{ route('books.pinjam') }}">
         @csrf
         <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
-        <button type="submit" class="bg-pink-600 text-black ...">
-             PINJAM BUKU 💖
+        <button type="submit" class="w-full flex items-center justify-center gap-3 py-4 bg-red-600 text-white font-bold py-2 px-4 rounded">
+            <span> PINJAM BUKU </span>
+            <span> 💖 </span>
         </button>
     </form>
 @else
     <form method="POST" action="{{ route('books.kembalikan') }}">
         @csrf
         <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
-        <button type="submit" class="bg-pink-600 text-white font-bold py-2 px-4 rounded">
+        <button type="submit" class="w-full flex items-center justify-center gap-3 py-4 bg-blue-600 text-white font-bold py-2 px-4 rounded">
             ↩️ KEMBALIKAN
         </button>
     </form>
@@ -202,4 +218,14 @@
             </div>
         </div>
     </div>
+    <footer class="mt-20 py-10 border-t border-slate-100 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+        <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">
+            &copy; {{ date('Y') }} Perpustakaan Digital. All rights reserved.
+        </p>
+        <p class="text-slate-300 text-[10px] mt-2">
+            Dibangun dengan sepenuh hati untuk memudahkan akses literasi.
+        </p>
+    </div>
+</footer>
 </x-app-layout>

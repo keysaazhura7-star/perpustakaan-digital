@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
 
         {{-- Tombol Kembali ke Dashboard --}}
-        <div classs="mb-6">
+        <div class="mb-6">
             <a href="{{ route('dashboard') }}" class="inline-flex items-center text-slate-500 hover:text-pink-600 font-bold transition duration-300 ease-in-out">
                 <span class="mr-2 text-xl">←</span> KEMBALI KE DASHBOARD
             </a>
@@ -19,6 +19,7 @@
                         <th class="p-4">Peminjam</th>
                         <th class="p-4">Judul Buku</th>
                         <th class="p-4">Tenggat Waktu</th>
+                        <th class="p-4 text-center">Denda</th>
                         <th class="p-4 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -28,11 +29,23 @@
                         <td class="p-4 font-semibold">{{ $data->nama_peminjam }}</td>
                         <td class="p-4 font-medium">{{ $data->judul_buku }}</td>
                         <td class="p-4 text-sm">{{ \Carbon\Carbon::parse($data->tanggal_kembali)->format('d M Y') }}</td>
+                        
+                        {{-- Menampilkan Status dan Denda --}}
                         <td class="p-4 text-center">
-                            {{-- Tombol Kembalikan --}}
+                            @if($data->denda > 0)
+                                <div class="bg-red-50 text-red-600 px-3 py-2 rounded-xl text-[10px] font-black uppercase">
+                                    Terlambat<br>
+                                    <span class="text-[11px]">Rp {{ number_format($data->denda, 0, ',', '.') }}</span>
+                                </div>
+                            @else
+                                <span class="text-green-500 font-bold text-xs uppercase">Aman</span>
+                            @endif
+                        </td>
+
+                        <td class="p-4 text-center">
                             <form action="{{ route('books.kembalikan') }}" method="POST">
                                 @csrf
-                                <input type="hidden" name="judul_buku" value="{{ $data->judul_buku }}">
+                                <input type="hidden" name="id" value="{{ $data->id }}">
                                 <button type="submit" class="text-xs bg-pink-100 text-pink-600 font-bold px-4 py-2 rounded-xl hover:bg-pink-600 hover:text-white transition">
                                     KEMBALIKAN
                                 </button>

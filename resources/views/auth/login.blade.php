@@ -132,6 +132,15 @@
             </form>
         </div>
     </div>
-
+    <footer class="mt-20 py-10 border-t border-slate-100 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+        <p class="text-slate-400 font-bold text-xs uppercase tracking-widest">
+            &copy; {{ date('Y') }} Perpustakaan Digital. All rights reserved.
+        </p>
+        <p class="text-slate-300 text-[10px] mt-2">
+            Dibangun dengan sepenuh hati untuk memudahkan akses literasi.
+        </p>
+    </div>
+</footer>
 </body>
 </html>
