@@ -2,16 +2,16 @@
     <header class="bg-white border-b border-slate-100 py-6 mb-8">
     <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
         <div>
-            <!-- Tambahkan font-black untuk ketebalan maksimal -->
             <h1 class="text-2xl font-black text-slate-800 tracking-tighter uppercase">
                 Perpustakaan <span class="text-pink-600">Digital</span>
             </h1>
-            <!-- Tambahkan font-black di sini juga -->
-            <p class="text-xs text-slate-400 font-black uppercase tracking-widest">
-                Sistem Kelola Buku & Peminjaman
-            </p>
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Sistem Kelola Buku & Peminjaman</p>
         </div>
-        <!-- ... sisa kode lainnya ... -->
+        <div class="text-right">
+            <span class="text-[10px] bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-bold uppercase">
+                {{ now()->format('d M Y') }}
+            </span>
+        </div>
     </div>
 </header>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
@@ -120,6 +120,10 @@
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Penulis</label>
                                         <input type="text" name="penulis" required class="w-full rounded-2xl border-slate-200 focus:border-pink-500 focus:ring-pink-500 text-sm p-3.5">
                                     </div>
+                                     <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Deskripsi</label>
+                                        <input type="text" name="deskripsi" required class="w-full rounded-2xl border-slate-200 focus:border-pink-500 focus:ring-pink-500 text-sm p-3.5">
+                                    </div>
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Kategori</label>
                                         <select name="kategori" class="w-full rounded-2xl border-slate-200 focus:border-pink-500 focus:ring-pink-500 text-sm p-3.5 bg-white">
@@ -171,7 +175,10 @@
 
                                 <h3 class="font-black text-slate-800 text-xl mb-1">{{ $item->judul }}</h3>
                                 <p class="text-xs text-slate-400 mb-4">by {{ $item->penulis }}</p>
-
+                                    <p class="text-xs text-slate-600 italic leading-relaxed h-20 overflow-y-auto mb-4">
+                                      <!-- {{ $deskripsiBuku[$item->judul] ?? 'Deskripsi tidak tersedia.' }} -->
+                                {{$item->deskripsi}}
+                                    </p>
                                 @if(Auth::check() && Auth::user()->role == 'penjaga')
                                     <form action="{{ route('books.update', $item->id) }}" method="POST" enctype="multipart/form-data" class="mb-4">
                                         @csrf @method('PUT')
