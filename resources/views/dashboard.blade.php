@@ -2,16 +2,16 @@
     <header class="bg-white border-b border-slate-100 py-6 mb-8">
     <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
         <div>
+            <!-- Tambahkan font-black untuk ketebalan maksimal -->
             <h1 class="text-2xl font-black text-slate-800 tracking-tighter uppercase">
                 Perpustakaan <span class="text-pink-600">Digital</span>
             </h1>
-            <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">Sistem Kelola Buku & Peminjaman</p>
+            <!-- Tambahkan font-black di sini juga -->
+            <p class="text-xs text-slate-400 font-black uppercase tracking-widest">
+                Sistem Kelola Buku & Peminjaman
+            </p>
         </div>
-        <div class="text-right">
-            <span class="text-[10px] bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-bold uppercase">
-                {{ now()->format('d M Y') }}
-            </span>
-        </div>
+        <!-- ... sisa kode lainnya ... -->
     </div>
 </header>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
@@ -130,7 +130,7 @@
                                     </div>
                                 </div>
                                 <input type="hidden" name="status" value="Tersedia">
-                                <button type="submit" class="w-full py-3.5 bg-pink-600 text-white font-black rounded-2xl text-xs uppercase tracking-widest cursor-pointer">
+                                <button type="submit" class="w-full py-3.5 bg-red-600 text-black font-black rounded-2xl text-xs uppercase tracking-widest cursor-pointer">
                                     💾 Simpan Buku
                                 </button>
                             </form>

@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/avatar', [libraryController::class, 'updateAvatar'])->name('profile.avatar.update');
     Route::post('/buku', [libraryController::class, 'storeBook'])->name('books.store');
     Route::put('/books/update/{id}', [libraryController::class, 'update'])->name('books.update');
+    Route::post('/books', [App\Http\Controllers\libraryController::class, 'storeBook'])->name('books.store');
 
     // FITUR UTAMA: Pinjam & Kembalikan
     // Perhatikan: Menggunakan Route::post karena form menggunakan method POST

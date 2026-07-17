@@ -88,4 +88,23 @@ class libraryController extends Controller
         }
         return redirect()->back()->with('sukses', 'Sampul berhasil diperbarui!');
     }
+
+    public function storeBook(Request $request)
+    {
+        $request->validate([
+            'judul'     => 'required|string|max:255',
+            'penulis'   => 'required|string|max:255',
+            'kategori'  => 'required|string',
+        ]);
+
+        \App\Models\Book::create([
+            'judul'     => $request->judul,
+            'penulis'   => $request->penulis,
+            'kategori'  => $request->kategori,
+            'status'    => 'Tersedia',
+        ]);
+
+        return redirect()->back()->with('sukses', 'Buku berhasil ditambahkan!');
+    }
+
 }
