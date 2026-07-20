@@ -94,19 +94,16 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
                 @if(isset($semuaBuku) && $semuaBuku->count() > 0)
                     
-                    {{-- TAMBAH BUKU (KHUSUS PENJAGA) --}}
-
-                    {{-- LINK AKSES DAFTAR PINJAMAN (Diletakkan sebelum form tambah buku) --}}
-                        @if(Auth::check() && Auth::user()->role == 'penjaga')
-                            <div class="max-w-2xl mx-auto mb-6 flex justify-end">
-                                <a href="{{ route('peminjaman.index') }}" 
-                                class="bg-pink-600 hover:bg-pink-700 text-gray font-bold py-2 px-6 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest">
-                                📋 Lihat Daftar Peminjaman Buku
-                                </a>
-                            </div>
-                        @endif
-
+                    {{-- LINK AKSES DAFTAR PINJAMAN (KHUSUS PENJAGA) --}}
                     @if(Auth::check() && Auth::user()->role == 'penjaga')
+                        <div class="col-span-full flex justify-end">
+                            <a href="{{ route('peminjaman.index') }}" 
+                            class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-2xl shadow-lg transition-all text-xs uppercase tracking-widest">
+                            📋 Lihat Daftar Peminjaman Buku
+                            </a>
+                        </div>
+
+                        {{-- TAMBAH BUKU BARU (KHUSUS PENJAGA) --}}
                         <div class="bg-white/80 backdrop-blur-md p-8 rounded-[32px] border border-rose-100/60 shadow-sm max-w-2xl mx-auto mb-10 col-span-full w-full">
                             <h3 class="font-black text-slate-800 text-lg uppercase tracking-wider mb-6">📚 Tambah Buku Baru</h3>
                             <form action="{{ route('books.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
@@ -132,9 +129,13 @@
                                             <option value="Sejarah">📜 Sejarah</option>
                                         </select>
                                     </div>
+                                    <div>
+                                 <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pilih File Sampul</label>
+                                <input type="file" name="cover" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-red-50 file:text-red-700">
+                                    </div>
                                 </div>
                                 <input type="hidden" name="status" value="Tersedia">
-                                <button type="submit" class="w-full py-3.5 bg-red-600 text-black font-black rounded-2xl text-xs uppercase tracking-widest cursor-pointer">
+                                <button type="submit" class="w-full py-3.5 bg-pink-600 text-black font-black rounded-2xl text-xs uppercase tracking-widest cursor-pointer">
                                     💾 Simpan Buku
                                 </button>
                             </form>
@@ -147,6 +148,20 @@
                             <div class="p-8">
                                 <div class="flex items-center justify-between mb-5">
                                     <span class="text-[10px] uppercase tracking-widest bg-rose-50 text-pink-600 font-black px-3 py-1.5 rounded-xl">{{ $item->kategori ?? 'UMUM' }}</span>
+                                   {{-- TOMBOL HAPUS BUKU MODERN (KHUSUS PENJAGA) --}}
+                                    @if(Auth::check() && strtolower(Auth::user()->role) == 'penjaga')
+                                        <form id="form-delete-{{ $item->id }}" action="{{ route('books.destroy', $item->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" 
+                                                    onclick="konfirmasiHapus({{ $item->id }}, '{{ addslashes($item->judul) }}')" 
+                                                    class="flex items-center gap-1.5 text-rose-500 hover:text-rose-700 text-xs font-bold bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-xl transition-all shadow-sm active:scale-95" 
+                                                    title="Hapus Buku">
+                                                <span>🗑️</span>
+                                                <span>Hapus</span>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
 
                                 <div class="w-full h-[180px] bg-slate-50 border border-slate-100/70 rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
@@ -155,68 +170,78 @@
                                     @else
                                         <span class="text-4xl">📖</span>
                                     @endif
-                                    {{-- BAGIAN GANTI SAMPUL (HANYA PENJAGA) --}}
-                                        @if(Auth::check() && Auth::user()->role == 'penjaga')
-                                            <form action="{{ route('books.update', $item->id) }}" method="POST" enctype="multipart/form-data" class="mt-4">
-                                                @csrf @method('PUT')
-                                                
-                                                <label class="block w-full cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] text-center py-2 rounded-lg font-bold transition">
-                                                    <span id="label-file-{{$item->id}}">PILIH FOTO SAMPUL</span>
-                                                    <input type="file" name="cover" required class="hidden" 
-                                                        onchange="document.getElementById('label-file-{{$item->id}}').innerText = this.files[0].name">
-                                                </label>
-                                                
-                                                <button type="submit" class="w-full mt-2 bg-pink-600 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-pink-700 transition">
-                                                    💾 SIMPAN PERUBAHAN
-                                                </button>
-                                            </form>
-                                        @endif
                                 </div>
 
-                                <h3 class="font-black text-slate-800 text-xl mb-1">{{ $item->judul }}</h3>
-                                <p class="text-xs text-slate-400 mb-4">by {{ $item->penulis }}</p>
-                                    <p class="text-xs text-slate-600 italic leading-relaxed h-20 overflow-y-auto mb-4">
-                                      <!-- {{ $deskripsiBuku[$item->judul] ?? 'Deskripsi tidak tersedia.' }} -->
-                                {{$item->deskripsi}}
-                                    </p>
-                                @if(Auth::check() && Auth::user()->role == 'penjaga')
-                                    <form action="{{ route('books.update', $item->id) }}" method="POST" enctype="multipart/form-data" class="mb-4">
-                                        @csrf @method('PUT')
-                                        <input type="file" name="cover" required class="w-full text-[10px] mb-2">
-                                        <button type="submit" class="bg-pink-600 text-white text-[10px] px-3 py-1 rounded-lg">Ganti Sampul</button>
-                                    </form>
-                                @endif
-                            </div>  
- 
-                            {{-- TOMBOL AKSI DENGAN DEBUG --}}
-                            <div class="p-6 bg-slate-50/50 border-t border-slate-100/80">
-                                <div class="mb-4 text-[9px] font-mono text-rose-500 bg-rose-100 p-2 rounded italic text-center border border-rose-200">
-                                    Status DB: [{{ $item->status }}]
-                                </div>
+                                {{-- FORM GANTI SAMPUL (HANYA PENJAGA) --}}
+@if(Auth::check() && strtolower(Auth::user()->role) == 'penjaga')
+    <form action="{{ route('books.update', $item->id) }}" method="POST" enctype="multipart/form-data" class="mb-4 pt-3 border-t border-dashed border-slate-100">
+        @csrf 
+        @method('PUT')
+        
+        {{-- Kirim data pendukung agar lolos validasi Controller --}}
+        <input type="hidden" name="judul" value="{{ $item->judul }}">
+        <input type="hidden" name="penulis" value="{{ $item->penulis }}">
+        <input type="hidden" name="kategori" value="{{ $item->kategori }}">
+        <input type="hidden" name="status" value="{{ $item->status }}">
+        <input type="hidden" name="deskripsi" value="{{ $item->deskripsi }}">
 
-                                {{-- Gunakan cara ini untuk memastikan perbandingannya bersih --}}
-@if($item->status == 'Tersedia')
-    <form method="POST" action="{{ route('books.pinjam') }}">
-        @csrf
-        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
-        <button type="submit" class="w-full flex items-center justify-center gap-3 py-4 bg-red-600 text-white font-bold py-2 px-4 rounded">
-            <span> PINJAM BUKU </span>
-            <span> 💖 </span>
-        </button>
-    </form>
-@else
-    <form method="POST" action="{{ route('books.kembalikan') }}">
-        @csrf
-        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
-        <button type="submit" class="w-full flex items-center justify-center gap-3 py-4 bg-blue-600 text-white font-bold py-2 px-4 rounded">
-            ↩️ KEMBALIKAN
+        <label class="block w-full cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] text-center py-2 rounded-lg font-bold transition mb-2">
+            <span id="label-file-{{$item->id}}">PILIH FOTO SAMPUL</span>
+            {{-- Hapus atribut value dan sesuaikan required jika opsional --}}
+            <input type="file" name="cover" class="hidden" 
+                onchange="document.getElementById('label-file-{{$item->id}}').innerText = this.files[0].name">
+        </label>
+        
+        <button type="submit" class="w-full bg-pink-600 text-white text-[10px] font-bold py-2 rounded-lg hover:bg-pink-700 transition">
+            💾 SIMPAN PERUBAHAN
         </button>
     </form>
 @endif
+
+@if ($errors->any())
+    <div class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-3xl text-xs font-bold shadow-sm mb-6">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>⚠️ {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+                                <h3 class="font-black text-slate-800 text-xl mb-1">{{ $item->judul }}</h3>
+                                <p class="text-xs text-slate-400 mb-4">by {{ $item->penulis }}</p>
+                                <p class="text-xs text-slate-600 italic leading-relaxed h-20 overflow-y-auto mb-4">
+                                    {{ $item->deskripsi }}
+                                </p>
+                            </div>  
+ 
+                            {{-- TOMBOL AKSI PEMINJAMAN --}}
+                            <div class="p-6 bg-slate-50/50 border-t border-slate-100/80">
+                                <div class="mb-4 text-[9px] font-mono text-rose-500 bg-rose-100 p-2 rounded italic text-center border border-rose-200">
+                                    Status : [{{ $item->status }}]
+                                </div>
+
+                                @if($item->status == 'Tersedia')
+                                    <form method="POST" action="{{ route('books.pinjam') }}">
+                                        @csrf
+                                        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
+                                        <button type="submit" class="w-full flex items-center justify-center gap-3 py-3 bg-red-600 text-white font-bold px-4 rounded-xl text-xs uppercase tracking-wider">
+                                            <span> PINJAM BUKU </span>
+                                            <span> 💖 </span>
+                                        </button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('books.kembalikan') }}">
+                                        @csrf
+                                        <input type="hidden" name="judul_buku" value="{{ $item->judul }}">
+                                        <button type="submit" class="w-full flex items-center justify-center gap-3 py-3 bg-blue-600 text-white font-bold px-4 rounded-xl text-xs uppercase tracking-wider">
+                                            ↩️ KEMBALIKAN
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
                     @endforeach
-
                 @else
                     <div class="col-span-full py-24 text-center">
                         <h4 class="text-base font-black text-rose-900">Rak Buku Kosong</h4>
@@ -235,4 +260,59 @@
         </p>
     </div>
 </footer>
+ {{-- CDN SWEETALERT2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- SCRIPT JAVASCRIPT UNTUK POP-UP SWEETALERT2 --}}
+    <script>
+        // 1. Function Pop-up Konfirmasi Hapus
+        function konfirmasiHapus(id, judul) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: `Apakah Anda yakin ingin menghapus buku "${judul}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-3xl p-6 shadow-xl',
+                    confirmButton: 'px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider',
+                    cancelButton: 'px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-delete-' + id).submit();
+                }
+            });
+        }
+
+        // 2. Pop-up Otomatis Jika Berhasil (Flash Session Sukses)
+        @if(session('sukses'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('sukses') }}",
+                timer: 2500,
+                showConfirmButton: false,
+                customClass: {
+                    popup: 'rounded-3xl p-6 shadow-xl'
+                }
+            });
+        @endif
+
+        // 3. Pop-up Otomatis Jika Error (Flash Session Error)
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: "{{ session('error') }}",
+                confirmButtonColor: '#ef4444',
+                customClass: {
+                    popup: 'rounded-3xl p-6 shadow-xl'
+                }
+            });
+        @endif
+    </script>
 </x-app-layout>
