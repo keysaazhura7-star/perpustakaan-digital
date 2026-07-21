@@ -164,13 +164,13 @@
                                     @endif
                                 </div>
 
-                                <div class="w-full h-[180px] bg-slate-50 border border-slate-100/70 rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+                                <a href="{{ route('books.show', $item->id) }}" class="block w-full h-[180px] bg-slate-50 border border-slate-100/70 rounded-2xl overflow-hidden mb-4 flex items-center justify-center hover:opacity-90 transition">
                                     @if($item->cover)
                                         <img src="{{ asset('storage/' . $item->cover) }}" class="w-full h-full object-cover">
                                     @else
                                         <span class="text-4xl">📖</span>
                                     @endif
-                                </div>
+                                </a>
 
                                 {{-- FORM GANTI SAMPUL (HANYA PENJAGA) --}}
 @if(Auth::check() && strtolower(Auth::user()->role) == 'penjaga')
@@ -208,11 +208,10 @@
     </div>
 @endif
 
-                                <h3 class="font-black text-slate-800 text-xl mb-1">{{ $item->judul }}</h3>
+                                <a href="{{ route('books.show', $item->id) }}">
+                                    <h3 class="font-black text-slate-800 text-xl mb-1 hover:text-pink-600 transition">{{ $item->judul }}</h3>
+                                </a>
                                 <p class="text-xs text-slate-400 mb-4">by {{ $item->penulis }}</p>
-                                <p class="text-xs text-slate-600 italic leading-relaxed h-20 overflow-y-auto mb-4">
-                                    {{ $item->deskripsi }}
-                                </p>
                             </div>  
  
                             {{-- TOMBOL AKSI PEMINJAMAN --}}

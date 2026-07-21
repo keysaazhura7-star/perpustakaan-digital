@@ -52,7 +52,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/daftar-peminjaman', [libraryController::class, 'daftarPeminjaman'])->name('peminjaman.index');
 
+    Route::get('/books/{id}', [LibraryController::class, 'show'])->name('books.show');
+
     Route::put('/books/{id}', [LibraryController::class, 'update'])->name('books.update');
+
+
    
 });
 

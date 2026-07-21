@@ -154,6 +154,10 @@ class libraryController extends Controller
         return redirect()->back()->with('sukses', 'Buku berhasil ditambahkan!');
     }
     
-    
+    public function show($id)
+{
+    $buku = Book::findOrFail($id);
+    return view('books.show', compact('buku'));
+}
 
 }
