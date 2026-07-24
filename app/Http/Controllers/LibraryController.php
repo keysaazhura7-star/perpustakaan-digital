@@ -160,4 +160,13 @@ class libraryController extends Controller
     return view('books.show', compact('buku'));
 }
 
+// Fungsi untuk melihat daftar buku yang sedang dipinjam oleh user yang sedang login
+    public function bukuSaya()
+    {
+        // Mengambil data peminjaman berdasarkan nama user yang sedang login
+        $peminjamanSaya = Borrowing::where('nama_peminjam', Auth::user()->name)->get();
+
+        return view('peminjam.buku-saya', compact('peminjamanSaya'));
+    }
+
 }

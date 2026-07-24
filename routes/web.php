@@ -26,6 +26,10 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // rute untuk melihat buku yang sedang dipinjam
+Route::get('/buku-saya', [libraryController::class, 'bukuSaya'])->name('buku.saya');
+   
+
     // Manajemen Buku (Tambah, Update Sampul)
     Route::post('/profile/avatar', [libraryController::class, 'updateAvatar'])->name('profile.avatar.update');
 
@@ -57,7 +61,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/books/{id}', [LibraryController::class, 'update'])->name('books.update');
 
 
-   
 });
 
 require __DIR__.'/auth.php';

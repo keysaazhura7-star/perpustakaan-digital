@@ -82,6 +82,9 @@
                     <span class="text-rose-400 text-sm">🎀</span>
                     <span class="text-xs font-black text-slate-500 uppercase tracking-widest">Kategori Rak Buku</span>
                 </div>
+                <a href="{{ route('buku.saya') }}" class="bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold px-4 py-2.5 rounded-2xl transition shadow-sm uppercase tracking-wider">
+                        📚 Pinjaman Saya
+                    </a>
                 <div class="flex flex-wrap gap-1 bg-slate-100/80 p-1 rounded-2xl w-full sm:w-auto">
                     <a href="/dashboard" class="text-xs font-bold px-5 py-2.5 rounded-xl transition-all duration-300 text-center flex-1 sm:flex-none {{ !request('kategori') ? 'bg-white text-pink-600 shadow-sm font-black' : 'text-slate-600 hover:text-slate-900' }}">Semua</a>
                     <a href="/dashboard?kategori=Sains" class="text-xs font-bold px-5 py-2.5 rounded-xl transition-all duration-300 text-center flex-1 sm:flex-none {{ request('kategori') == 'Sains' ? 'bg-white text-pink-600 shadow-sm font-black' : 'text-slate-600 hover:text-slate-900' }}">🔬 Sains</a>
